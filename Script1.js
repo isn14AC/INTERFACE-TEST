@@ -1,10 +1,13 @@
+window.onload = function(){
 var targetDest = "http://213.197.173.50:3153/Staging/FutureDemographicsDemo-XML/PopulationData.xml"
 
 d3.xml(targetDest, d3CustomXMLParse);
 
-var xmlArray = []
 
 function d3CustomXMLParse(error, rawXML) {
+	
+	var xmlArray = []
+	
 	if (error) throw error;
 
 	// Convert the XML document to an array of objects.
@@ -22,8 +25,9 @@ function d3CustomXMLParse(error, rawXML) {
 		
 		return cell
 	});
-	xmlArray = makeObjectKeys(d)
-	console.log(xmlArray)
+	xmlArray = makeObjectKeys(d);
+	render(xmlArray);
+
 };
 
 
@@ -38,8 +42,10 @@ function makeObjectKeys(parsedXML){
 			
 			objectKeys.forEach(function(objectKey, i){
 				
-				valueObject[objectKey] = mainValue[i]
+				var objValue = mainValue[i].replace("0x","#");
 				
+				valueObject[objectKey] = (!isNaN(objValue) ? +objValue : objValue )
+			
 			});
 			
 			return valueObject;			
@@ -50,4 +56,45 @@ function makeObjectKeys(parsedXML){
 	
 };
 
-console.log(xmlArray)
+
+
+function render(arr){
+	
+	// Settings
+	var r = 7;
+
+	var	width		= 800,
+		height		= width,
+		padding		= r,	
+		
+		xKey		= "PeriodYear",
+		yKey		= "PopulationAge",
+		colourKey	= "DotColour";
+
+	var svg = d3.select("body").append("svg")
+		.attr("width",	width)
+		.attr("height",	height);
+
+	// View Dimensions and scale
+	var	xScale = d3.scaleLinear().range([0 + padding, width - padding]),
+		yScale = d3.scaleLinear().range([0 + padding, height - padding]);
+	
+		xScale.domain(d3.extent(arr, function(d){ return d[xKey];}));
+		yScale.domain(d3.extent(arr, function(d){ return d[yKey];}));
+	
+	
+	// Bind data
+	var cells = svg.selectAll("circle").data(arr);
+	
+	// Enter stage
+	cells.enter().append("circle")
+		.attr(	"r",r)
+		.attr(	"cx",	function(d){ return xScale(d[xKey]);})
+		.attr(	"cy",	function(d){ return yScale(d[yKey]);})
+		.style(	"fill",	function(d){ return d[colourKey];});
+	
+	// Exit Stage
+	cells.exit().remove();
+}
+
+};

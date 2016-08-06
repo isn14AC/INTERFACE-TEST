@@ -8,6 +8,33 @@ var targetDest = "http://213.197.173.50:3153/Staging/FutureDemographicsDemo-XML/
 // Custom XML parser initiation as a callback using d3 get XML method from Data Service URL.
 d3.xml(targetDest, d3CustomXMLParse)
 
+// Graph Settings
+//
+// cellR	-	Cell (Circle) Radius
+// cellPad	-	padding between cells on x and y axis
+// svgPad	-	padding in SVG element
+//
+// axisOffset	-	Offset axis from bottom cells
+//
+// yWidth - width of y axis element
+// xWidth - height of x axis element
+//
+var cellR		= 5,
+	cellPad		= {	x:	1,	y:	-3	},
+	svgPad		= { top:	45,	bot:	45,	left:	45,	right:	45	},
+	
+	axisOffset	= 5,
+	tickSize	= { xBig:	6,	xSmall:	2,	yBig:	8,	ySmall:	4	},
+
+	yWidth		= 21.5,
+	xWidth		= 18.09;
+
+// Global variables for render to use
+
+	xKey		= "",
+	yKey		= "",
+	colorKey	= "";
+	
 // Custom XML parser function for given XML data stucture only.
 function d3CustomXMLParse(error, rawXML) {
 	
@@ -47,8 +74,12 @@ function d3CustomXMLParse(error, rawXML) {
 function makeObjectKeys(parsedXML){
 	
 	// First entry for object keys
-	var objectKeys = parsedXML[0],
+	var objectKeys = parsedXML[0];
 	
+	yKey		= objectKeys[0],
+	xKey		= objectKeys[1],
+	colorKey	= objectKeys[2],
+
 	// Removing entry of keys
 		mainValues  = parsedXML.slice(1)
 		
@@ -79,32 +110,6 @@ function makeObjectKeys(parsedXML){
 
 function render(arr){
 	
-	// Graph Settings
-	//
-	// cellR	-	Cell (Circle) Radius
-	// cellPad	-	padding between cells on x and y axis
-	// svgPad	-	padding in SVG element
-	//
-	// axisOffset	-	Offset axis from bottom cells
-	//
-	// Keys should be left as is - function is designed to work only with specific data structure
-	//
-	// yWidth - width of y axis element
-	// xWidth - height of x axis element
-	//
-	var cellR		= 5,
-		cellPad		= {	x:	1,	y:	-3	},
-		svgPad		= { top:	45,	bot:	25,	left:	25,	right:	45	},
-		
-		axisOffset	= 5,
-	
-		xKey		= "PeriodYear",
-		yKey		= "PopulationAge",
-		colorKey	= "DotColour",
-		
-		yWidth		= 21.5,
-		xWidth		= 18.09;		
-
 	// Counting number of x elements in row and y elements in column
 		xCount	= d3.max(arr, function(d){ return d[xKey];}) - d3.min(arr, function(d){ return d[xKey];});
 		yCount	= d3.max(arr, function(d){ return d[yKey];}) - d3.min(arr, function(d){ return d[yKey];});
@@ -121,7 +126,7 @@ function render(arr){
 		svgHeight	= height + extraHight;
 		
 	// Binding SVG element to variable, setting calculated attributes for height and width
-	var svg = d3.select("body").append("svg")
+	var svg = d3.select("#Rendering").append("svg")
 		.attr("width",	svgWidth)
 		.attr("height",	svgHeight);
 
@@ -133,7 +138,7 @@ function render(arr){
 	// Setting default parameters
 	var xAxis = d3.axisBottom()
 				.scale(xScale)
-				.ticks(60, "f");
+				.ticks(50, "f");
 	
 	// Same with y axis
 	var yAxis = d3.axisLeft()
@@ -174,8 +179,8 @@ function render(arr){
 	// Tweaking y axis for minor tick looks
 	d3.selectAll("g.yaxis g.tick line")
     .attr("x2", function(d){
-		if ( (d)%5 )	{ return -4; }
-		else 			{ return -10; }
+		if ( (d)%5 )	{ return -tickSize.ySmall; }
+		else 			{ return -tickSize.yBig; }
 		});
 	
 	d3.selectAll("g.yaxis g.tick text")
@@ -188,8 +193,8 @@ function render(arr){
 	// Tweaking x axis for minor tick looks
 	d3.selectAll("g.xaxis g.tick line")
     .attr("y2", function(d){
-		if ( (d)%5 )	{ return 3; }
-		else 			{ return 6; }
+		if ( (d)%5 )	{ return tickSize.xSmall; }
+		else 			{ return tickSize.xBig; }
 		});
 
 	d3.selectAll("g.xaxis g.tick text")
@@ -197,7 +202,7 @@ function render(arr){
 		if ( (d)%10 )	{ return "delete"; }
 		});
 
-	d3.selectAll("g.xaxis g.tick text.delete").remove();	
-
+	d3.selectAll("g.xaxis g.tick text.delete").remove();
+	
 	}
 };

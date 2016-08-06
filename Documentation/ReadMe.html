@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Read Me</title>
+<style>
+
+p {
+
+text-align:justify;
+}
+
+code {
+
+padding-left: 20px;
+}
+
+
+img {
+
+border: solid 1px black;
+margin: 10px 5px;
+padding: 5px;
+}
+
+
+div.img {
+
+text-align: center;
+margin: auto;
+}
+
+
+#Contents, #Intro, #Use {
+
+margin-bottom: 100px;
+}
+
+
+div.caption {
+
+text-align: center;
+font-size: 0.8em;
+}
+
+
+div.Code_outter {
+
+width: 80%;
+margin: auto;
+}
+
+div.Code_inner {
+
+background-color: #1e1e1e;
+padding-bottom: 20px;
+}
+
+
+span.tg_txt {
+
+color: #429cd6;
+}
+
+
+span.tg_chr {
+
+color: #5f8080;
+}
+
+
+span.tg_attr_txt {
+
+color: #9cdcfe;
+}
+
+
+span.tg_attr {
+
+color: #c8c8c8;
+}
+
+
+span.cmnt {
+
+color: #43a64a;
+}
+
+
+
+span.qtmark {
+
+color: #ba5f30;
+}
+
+
+span.int {
+
+color: #b5cea8;
+}
+</style>
+</head>
+<body>
+<div id="Contents">
+	<h2>Table of Contents</h2>
+	<ul>
+		<li>
+			<h3><a href="#Intro">Introduction<a></h3>
+		</li>
+		<li>
+			<h3><a href="#Use">Usage</a></h3>
+		</li>
+	</ul>
+</div>
+<div id="Intro">
+	<h2>Introduction</h2>
+	<p>This JavaScript component was developed using <a href="https://d3js.org/">D3.js</a> JavaScript library, for the purpose of plotting population data graph using the XML data service. Rendered graph represents the number of people for the particular age group at particular period of time.</p>
+	<ul>
+		<li>Horizontal axis presents annual time period. It starts in 1977 year and finishes in 2030.</li>
+		<li>Vertical axis presents population age in the range from 0 to 80 years old.</li>
+		<li>The colour of every dot presents quantity (Closer to red means more people)</li>
+	</ul>
+	<p>Component is meant to be used with XML files of particular data structure, where first sibling node of root node contains header values (object keys), and other siblings contains values where first element is Y axis value, second is value for X axis, and third is HEX color code.</p>
+<div class="img">
+	<img src="images/xml_structure.png" alt="XML Data structure"></img><br>
+</div>
+<div class="caption">Pic. 1 XML Data structure</div>
+<p><strong>Childnodes of Root node must be called "Row", otherwise the parser will fail to get objects.</strong></p>
+</div>
+<div id="Use">
+<h2>Usage</h2>
+<div><p>To use the component, it must be linked to from the HTML page as shown in the example code below. If script file is in the same directory as HTML file, then example line can be used, otherwise correct path to script file must be provided.</p></div>
+<div class="Code_outter">
+	<div class="Code_inner">
+		<div style="background-color: #535355; color: #7ac1ff; padding: 2px 10px; margin-bottom: 20px;">Code:</div>
+		<code>
+			<span class="tg_chr">&lt;</span><span class="tg_txt">script</span> <span class="tg_attr_txt">src</span><span class="tg_attr">="Component.js"</span><span class="tg_chr">&gt;&lt;</span><span class="tg_txt">/script</span><span class="tg_chr">&gt;</span>
+		</code>
+	</div>
+</div>
+<div class="caption">Code. 1 Script linking example</div>
+<div><p>Inside the script file there is the Settings section at the top, where graph looks can be tweaked.</p></div>
+<div class="Code_outter">
+	<div class="Code_inner">
+		<div style="background-color: #535355; color: #7ac1ff; padding: 2px 10px; margin-bottom: 20px;">Code:</div>
+		<code>
+		<span class="cmnt">
+			// Data Service Description<br>
+			// Use this Data Service URL as data source for the application, that would be providing data for<br>
+			// the component:<br>
+			<span class="tg_attr"><span class="tg_attr_txt">var</span> targetDest = <span class="qtmark">"</span><span class="tg_attr_txt">http://213.197.173.50:3153/Staging/FutureDemographicsDemo-XML/PopulationData.xml</span><span class="qtmark">"</span></span><br><br>
+
+			// Custom XML parser initiation as a callback using d3 get XML method from Data Service URL.<br>
+			<span class="tg_attr">d3.xml(targetDest, d3CustomXMLParse)</span><br><br>
+
+			// Graph Settings<br>
+			//<br>
+			// cellR	-	Cell (Circle) Radius<br>
+			// cellPad	-	padding between cells on x and y axis<br>
+			// svgPad	-	padding in SVG element<br>
+			//<br>
+			// axisOffset	-	Offset axis from bottom cells<br>
+			//<br>
+			// yWidth - width of y axis element<br>
+			// xWidth - height of x axis element<br>
+			//<br>
+			<span class="tg_attr"><span class="tg_attr_txt">
+			var</span> cellR		= <span class="int">5</span>,<br>
+				cellPad		= {	x:	<span class="int">1</span>,	y:	<span class="int">-3</span>	},<br>
+				svgPad		= { top:	<span class="int">45</span>,	bot:	<span class="int">25</span>,	left:	<span class="int">25</span>,	right:	<span class="int">45</span>	},<br><br>
+				
+				axisOffset	= <span class="int">5</span>,<br>
+				tickSize	= { xBig:	<span class="int">6</span>,	xSmall:	<span class="int">3</span>,	yBig:	<span class="int">8</span>,	ySmall:	<span class="int">4</span>	},<br><br>
+
+				yWidth		= <span class="int">21.5</span>,<br>
+				xWidth		= <span class="int">18.09</span>;
+			</span>
+		</span>
+		</code>
+	</div>
+</div>
+<div class="caption">Code. 2 Script settings section</div>
+<p> Variable "targetDest" contains Data Service url. This can be changed, however target file must be of the same data structure.<br><br> Cell size can be changed while adjusting "cellR" value. Picture bellow compares rendering of 5px cell and 10px cell.
+</p>
+<div class="img">
+	<img src="images/cell5.png" alt="XML Data structure"></img><img src="images/cell10.png" alt="XML Data structure"></img>
+</div>
+<div class="caption">Pic. 2 Rendering with diferent size of cells</div>
+<p>Below are the renderings of different spacings between cells</p>
+<div class="img">
+	<img src="images/pad_normal.png" alt="XML Data structure"></img><img src="images/pad0.png" alt="XML Data structure"></img><img src="images/pad1.png" alt="XML Data structure"></img>
+</div>
+<div class="caption">Pic. 3 Rendering with different spacings of cells</div>
+<p>Renderings with different margin settings can be seen in the following pictures. Results are obtained adjusting "svgPad" values </p>
+<div class="img">
+	<img src="images/margin_normal.png" alt="XML Data structure"></img><img src="images/margin0.png" alt="XML Data structure"></img>
+</div>
+<div class="caption">Pic. 4 Renderings with different margin settings</div>
+<p>Here are results of different "axisOffset" settings. Offset is 5px in the first picture, and 0px in the other.</p>
+<div class="img">
+	<img src="images/margin_normal.png" alt="XML Data structure"></img><img src="images/axisoffset0.png" alt="XML Data structure"></img>
+</div>
+<div class="caption">Pic. 5 Renderings with different axis offset settings</div>
+<p>Last example picture shows what can be achieved with "tickSize" adjustments. Each axis can be tweaked individualy</p>
+<div class="img">
+	<img src="images/ticks2.png" alt="XML Data structure"></img><img src="images/ticks1.png" alt="XML Data structure"></img>
+</div>
+<div class="caption">Pic. 6 Renderings with different tick sizes on axis settings</div>
+
+</div>
+</body>
+</html>

@@ -20,14 +20,16 @@ d3.xml(targetDest, d3CustomXMLParse)
 // xWidth - height of x axis element
 //
 var cellR		= 5,
-	cellPad		= {	x:	1,	y:	-3	},
+	cellPad		= {	x:	1,	y:	-1	},
 	svgPad		= { top:	45,	bot:	45,	left:	45,	right:	45	},
+	shape		= ["circle", "rect"],
+	defShape	= shape[1],
 	
 	axisOffset	= 5,
 	tickSize	= { xBig:	6,	xSmall:	2,	yBig:	8,	ySmall:	4	},
 
 	yWidth		= 21.5,
-	xWidth		= 18.09;
+	xWidth		= 18.09,
 
 // Global variables for render to use
 
@@ -39,7 +41,9 @@ var cellR		= 5,
 function d3CustomXMLParse(error, rawXML) {
 	
 // Variable for result Data array	
-	var xmlArray = []
+	var xmlArray = [],
+	
+		nodeHeader = rawXML.children[0].children[0].nodeName;
 
 // Error handling
 	if (error) throw error;
@@ -48,14 +52,14 @@ function d3CustomXMLParse(error, rawXML) {
 	// Note that querySelectorAll returns a NodeList, not a proper Array,
 	// so map.call must be used to invoke array methods.
 	// Cycling through all Row Nodes, executing function on each iteration 
-	var d = [].map.call(rawXML.querySelectorAll("Row"), function(Row) {
+	var d = [].map.call(rawXML.querySelectorAll(nodeHeader), function(d) {
 		
 		var cell = [];
 
 			// Iterating each child element of Row, saving value to array
-			for (i=0; i<Row.childElementCount; i++){
+			for (i=0; i<d.childElementCount; i++){
 				
-				cell[i] = Row.children[i].childNodes[0].nodeValue
+				cell[i] = d.children[i].childNodes[0].nodeValue
 				
 			};
 		
@@ -115,8 +119,8 @@ function render(arr){
 		yCount	= d3.max(arr, function(d){ return d[yKey];}) - d3.min(arr, function(d){ return d[yKey];});
 
 	// Seting cell container width and height
-	var	width		= ((cellR * 2) + cellPad.x) * xCount,
-		height		= ((cellR * 2) + cellPad.y) * yCount,
+	var	width		= ((cellR * 2) + cellPad.x) * xCount - cellPad.x,
+		height		= ((cellR * 2) + cellPad.y) * yCount - cellPad.y,
 		
 	// Calculating extra width and height for SVG element
 		extraWidth	= svgPad.left + yWidth + axisOffset + svgPad.right,
@@ -148,19 +152,35 @@ function render(arr){
 	// Binding data to group element of SVG parent element
 	// Setting position
 	var c = svg.append("g")
+			.attr("id",	"cells")
 			.attr("transform", "translate(" + (svgPad.left + yWidth + axisOffset) + "," + (svgPad.top) + ")");
 	
 	// Binding array data to cells
-	var cells = c.selectAll("circle").data(arr);
+	var cells = c.selectAll(defShape).data(arr),
+		rectHeight = cellR * 2 + (cellPad.y < 1 ? cellPad.y - 1 : 0 );
+		
+	if (defShape === "rect"){
+	cells.enter().append(defShape)
+		.attr(	"width",	cellR * 2)
+		.attr(	"height",	cellR * 2 + (cellPad.y < 1 ? cellPad.y - 1 : 0 ) )
+		.attr(	"x",	function(d){ return xScale(d[xKey]);})
+		.attr(	"y",	function(d){ return yScale(d[yKey]);})
+		.style(	"fill",	function(d){ return d[colorKey];});
+
+	d3.select("#cells")
+		.attr("transform", "translate(" + (svgPad.left + yWidth + axisOffset - cellR) + "," + (svgPad.top - rectHeight/2) + ")");
+	}
 	
+	else{
 	// Rendering cells 
-	cells.enter().append("circle")
+	cells.enter().append(defShape)
 		.attr(	"class", "cell")
 		.attr(	"r",	cellR)
 		.attr(	"cx",	function(d){ return xScale(d[xKey]);})
 		.attr(	"cy",	function(d){ return yScale(d[yKey]);})
 		.style(	"fill",	function(d){ return d[colorKey];});
 
+	}
 	// Exit Stage of render function
 	cells.exit().remove();
 	
